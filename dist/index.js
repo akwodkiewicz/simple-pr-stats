@@ -31,32 +31,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 function main() {
+    var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('token');
         const octokit = github.getOctokit(token);
         const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
         const thresholdDate = new Date(Date.now() - THIRTY_DAYS);
         const pulls = [];
-        let pageNum = 0;
-        while (true) {
-            core.debug('fetching pulls');
-            const pullCandidates = yield octokit.rest.pulls.list({
+        try {
+            for (var _b = __asyncValues(octokit.paginate.iterator(octokit.rest.pulls.list, {
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 state: 'all',
                 sort: 'created',
-                direction: 'desc',
-                page: pageNum++
-            });
-            const pullsAboveThreshold = pullCandidates.data.filter(d => new Date(d.created_at) >= thresholdDate);
-            pulls.push(...pullsAboveThreshold);
-            if (pullsAboveThreshold.length < pullCandidates.data.length) {
-                break;
+                direction: 'desc'
+            })), _c; _c = yield _b.next(), !_c.done;) {
+                const response = _c.value;
+                const pullsAboveThreshold = response.data.filter((d) => new Date(d.created_at) >= thresholdDate);
+                pulls.push(...pullsAboveThreshold);
+                if (pullsAboveThreshold.length < response.data.length) {
+                    break;
+                }
             }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
         }
         const durationsMs = pulls.map(getPullDurationMs);
         const avgMs = durationsMs.slice(1).reduce((prev, curr, idx) => {
