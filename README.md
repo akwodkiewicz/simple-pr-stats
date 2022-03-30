@@ -1,4 +1,4 @@
-# pr-stats
+# simple-pr-stats
 
 Calculate simple PR statistics in your repository.
 
@@ -23,8 +23,8 @@ jobs:
   calculate-stats:
     runs-on: ubuntu-latest
     steps:
-      - name: Run pr-stats
-        uses: akwodkiewicz/pr-stats@v0.1
+      - name: Run simple-pr-stats
+        uses: akwodkiewicz/simple-pr-stats@v0.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```

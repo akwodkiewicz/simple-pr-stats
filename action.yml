@@ -1,4 +1,4 @@
-name: 'pr-stats'
+name: 'simple-pr-stats'
 author: 'Andrzej Wódkiewicz'
 description: 'Calculate simple PR statistics'
 runs:

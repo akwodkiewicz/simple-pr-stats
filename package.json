@@ -1,5 +1,5 @@
 {
-  "name": "x1",
+  "name": "simple-pr-stats",
   "version": "1.0.0",
   "main": "dist/index.js",
   "author": "Andrzej Wódkiewicz",
