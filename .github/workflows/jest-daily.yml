@@ -1,4 +1,6 @@
-on: [pull_request, workflow_dispatch]
+on:
+  schedule:
+    - cron: '20 23 * * *'
 
 jobs:
  x1_job:
