@@ -6,3 +6,6 @@ inputs:
   token:
     description: 'Your workflow GITHUB_TOKEN secret'
     required: true
+branding:
+  icon: git-pull-request
+  color: purple
