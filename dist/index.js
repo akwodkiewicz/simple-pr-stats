@@ -51,8 +51,8 @@ function main() {
         const pulls = [];
         try {
             for (var _b = __asyncValues(octokit.paginate.iterator(octokit.rest.pulls.list, {
-                owner: 'facebook',
-                repo: 'jest',
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
                 state: 'all',
                 sort: 'created',
                 direction: 'desc'
