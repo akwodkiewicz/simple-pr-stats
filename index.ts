@@ -12,8 +12,8 @@ async function main() {
     const pulls: Pull[] = [];
 
     for await (const response of octokit.paginate.iterator(octokit.rest.pulls.list, {
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
+        owner: 'facebook',
+        repo: 'jest',
         state: 'all',
         sort: 'created',
         direction: 'desc'
