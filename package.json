@@ -1,0 +1,15 @@
+{
+  "name": "x1",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "Andrzej Wódkiewicz",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0"
+  }
+}
