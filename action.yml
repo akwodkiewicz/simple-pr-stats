@@ -2,3 +2,10 @@ name: 'x1'
 runs:
   using: 'node16'
   main: 'dist/index.js'
+inputs:
+  token:
+    description: 'Your workflow GITHUB_TOKEN secret'
+    required: true
+branding:
+  icon: git-pull-request
+  color: purple

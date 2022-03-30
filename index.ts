@@ -5,39 +5,47 @@ type Pull = Awaited<ReturnType<ReturnType<typeof github['getOctokit']>['rest']['
 
 async function main() {
     const token = core.getInput('token');
+    const overrideOwner = core.getInput('override_owner');
+    const overrideRepo = core.getInput('override_repo');
+
     const octokit = github.getOctokit(token);
 
     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
     const thresholdDate = new Date(Date.now() - THIRTY_DAYS);
     const pulls: Pull[] = [];
 
-    while (true) {
-        const pullCandidates = await octokit.rest.pulls.list({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            state: 'all',
-            sort: 'created',
-            direction: 'desc',
-        });
-        const pullsAboveThreshold = pullCandidates.data.filter(d => new Date(d.created_at) >= thresholdDate);
+    for await (const response of octokit.paginate.iterator(octokit.rest.pulls.list, {
+        owner: overrideOwner || github.context.repo.owner,
+        repo: overrideRepo || github.context.repo.repo,
+        state: 'all',
+        sort: 'created',
+        direction: 'desc'
+    })) {
+        const pullsAboveThreshold = response.data.filter((d: Pull) => new Date(d.created_at) >= thresholdDate);
         pulls.push(...pullsAboveThreshold);
-        if (pullsAboveThreshold.length < pullCandidates.data.length) {
+        if (pullsAboveThreshold.length < response.data.length) {
             break;
         }
     }
 
-    const durationsMs = pulls.map(getPullDurationMs);
-    const avgMs = durationsMs.slice(1).reduce((prev, curr, idx) => {
+
+    const pullsWithDurations = pulls.map(attachPullDurationMs).sort((p1, p2) => p1[1] - p2[1]);
+
+    const avgMs = pullsWithDurations.map(([p, d]) => d).slice(1).reduce((prev, curr, idx) => {
         return (prev * idx + curr) / (idx + 1);
-    }, durationsMs[0]);
+    }, pullsWithDurations[0][1]);
     core.info(`Found ${pulls.length} pull request created after ${thresholdDate}`);
+
     core.info(`Average active time: ${msToDays(avgMs)} d`);
-    core.info(`Minimum active time: ${msToDays(Math.min(...durationsMs))} d`);
-    core.info(`Maximum active time: ${msToDays(Math.max(...durationsMs))} d`);
+    core.info(`Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`);
+    core.info(`Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`);
 }
 
-function getPullDurationMs(pull: Pull): number {
-    return new Date(pull.closed_at ?? pull.merged_at ?? Date.now()).valueOf() - new Date(pull.created_at).valueOf();
+function attachPullDurationMs(pull: Pull): [Pull, number] {
+    return [
+        pull,
+        new Date(pull.closed_at ?? pull.merged_at ?? Date.now()).valueOf() - new Date(pull.created_at).valueOf()
+    ];
 }
 
 function msToDays(ms: number): number {
