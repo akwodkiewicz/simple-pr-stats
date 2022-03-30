@@ -11,8 +11,8 @@ async function main() {
     const thresholdDate = new Date(Date.now() - THIRTY_DAYS);
     const pulls: Pull[] = [];
 
-    let circuitBreaker = 5;
-    while (circuitBreaker--) {
+    let pageNum = 0;
+    while (true) {
         core.debug('fetching pulls');
         const pullCandidates = await octokit.rest.pulls.list({
             owner: github.context.repo.owner,
@@ -20,8 +20,8 @@ async function main() {
             state: 'all',
             sort: 'created',
             direction: 'desc',
+            page: pageNum++
         });
-        core.debug(`repsonse: ${JSON.stringify(pullCandidates)}`);
         const pullsAboveThreshold = pullCandidates.data.filter(d => new Date(d.created_at) >= thresholdDate);
         pulls.push(...pullsAboveThreshold);
         if (pullsAboveThreshold.length < pullCandidates.data.length) {
