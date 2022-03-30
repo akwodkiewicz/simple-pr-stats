@@ -79,9 +79,15 @@ function main() {
             return (prev * idx + curr) / (idx + 1);
         }, pullsWithDurations[0][1]);
         core.info(`Found ${pulls.length} pull request created after ${thresholdDate}`);
-        core.info(`Average active time: ${msToDays(avgMs)} d`);
-        core.info(`Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`);
-        core.info(`Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`);
+        const messages = [
+            `Average active time: ${msToDays(avgMs)} d`,
+            `Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`,
+            `Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`
+        ];
+        for (const m of messages) {
+            core.info(m);
+            core.notice(m);
+        }
     });
 }
 function attachPullDurationMs(pull) {
