@@ -36,15 +36,9 @@ async function main() {
     }, pullsWithDurations[0][1]);
     core.info(`Found ${pulls.length} pull request created after ${thresholdDate}`);
 
-    const messages = [
-        `Average active time: ${msToDays(avgMs)} d`,
-        `Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`,
-        `Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`
-    ];
-    for (const m of messages) {
-        core.info(m);
-        core.notice(m);
-    }
+    core.notice(`Average active time: ${msToDays(avgMs)} d`, { title: 'Average active time' });
+    core.notice(`Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`, { title: 'Minimum active time' });
+    core.notice(`Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`, { title: 'Maximum active time' });
 }
 
 function attachPullDurationMs(pull: Pull): [Pull, number] {
