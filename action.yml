@@ -1,4 +1,6 @@
-name: 'x1'
+name: 'pr-stats'
+author: 'Andrzej Wódkiewicz'
+description: 'Calculate simple PR statistics'
 runs:
   using: 'node16'
   main: 'dist/index.js'
