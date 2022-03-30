@@ -5,6 +5,9 @@ type Pull = Awaited<ReturnType<ReturnType<typeof github['getOctokit']>['rest']['
 
 async function main() {
     const token = core.getInput('token');
+    const overrideOwner = core.getInput('override_owner');
+    const overrideRepo = core.getInput('override_repo');
+
     const octokit = github.getOctokit(token);
 
     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -12,8 +15,8 @@ async function main() {
     const pulls: Pull[] = [];
 
     for await (const response of octokit.paginate.iterator(octokit.rest.pulls.list, {
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
+        owner: overrideOwner || github.context.repo.owner,
+        repo: overrideRepo || github.context.repo.repo,
         state: 'all',
         sort: 'created',
         direction: 'desc'

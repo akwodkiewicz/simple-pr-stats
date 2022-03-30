@@ -45,14 +45,16 @@ function main() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('token');
+        const overrideOwner = core.getInput('override_owner');
+        const overrideRepo = core.getInput('override_repo');
         const octokit = github.getOctokit(token);
         const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
         const thresholdDate = new Date(Date.now() - THIRTY_DAYS);
         const pulls = [];
         try {
             for (var _b = __asyncValues(octokit.paginate.iterator(octokit.rest.pulls.list, {
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
+                owner: overrideOwner || github.context.repo.owner,
+                repo: overrideRepo || github.context.repo.repo,
                 state: 'all',
                 sort: 'created',
                 direction: 'desc'
