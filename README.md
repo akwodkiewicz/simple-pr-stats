@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run simple-pr-stats
-        uses: akwodkiewicz/simple-pr-stats@v0.1
+        uses: akwodkiewicz/simple-pr-stats@v0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           labels_to_ignore: label with spaces, release
