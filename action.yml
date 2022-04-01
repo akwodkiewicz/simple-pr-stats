@@ -12,6 +12,9 @@ inputs:
     description: "How far back should the calculations go, considering PR creation date (default: 30)"
     required: false
     default: 30
+  labels_to_ignore:
+    description: "PR with these labels will be ignored. Values delimited with commas"
+    required: false
 branding:
   icon: git-pull-request
   color: purple

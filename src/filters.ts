@@ -10,3 +10,13 @@ export function dateFilter(
     return new Date(p.created_at) >= thresholdDate;
   };
 }
+
+export function labelFilter(
+  labelsToIgnore: Input["labelsToIgnore"]
+): (pull: Pull) => boolean {
+  return (p: Pull) => {
+    return labelsToIgnore.every(
+      (labelToIgnore) => !p.labels.map((l) => l.name).includes(labelToIgnore)
+    );
+  };
+}
