@@ -1,6 +1,4 @@
-on:
-  schedule:
-    - cron: "20 23 * * *"
+on: pull_request
 
 jobs:
   x1_job:
@@ -15,5 +13,3 @@ jobs:
         uses: ./ # Uses an action in the root directory
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          override_owner: facebook
-          override_repo: jest
