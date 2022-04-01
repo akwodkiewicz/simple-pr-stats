@@ -1,4 +1,6 @@
 on:
+  workflow_dispatch:
+  pull_request:
   schedule:
     - cron: "20 23 * * *"
 
@@ -15,5 +17,6 @@ jobs:
         uses: ./ # Uses an action in the root directory
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          days_back: 120
           override_owner: facebook
           override_repo: jest
