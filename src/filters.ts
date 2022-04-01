@@ -20,3 +20,9 @@ export function labelFilter(
     );
   };
 }
+
+export function draftFilter(
+  includeDrafts: Input["includeDrafts"]
+): (pull: Pull) => boolean {
+  return (p: Pull) => (includeDrafts ? true : !p.draft);
+}

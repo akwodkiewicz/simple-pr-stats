@@ -22,6 +22,8 @@ export function parseInput(): Input {
     .map((x) => x.trim())
     .filter(Boolean);
 
+  const includeDrafts = core.getBooleanInput("include_drafts");
+
   const overrideOwner = core.getInput("override_owner") || undefined;
   const overrideRepo = core.getInput("override_repo") || undefined;
 
@@ -29,6 +31,7 @@ export function parseInput(): Input {
     token,
     daysBack,
     labelsToIgnore,
+    includeDrafts,
     overrideRepo,
     overrideOwner,
   };
@@ -38,6 +41,7 @@ export interface Input {
   token: string;
   daysBack: number;
   labelsToIgnore: string[];
+  includeDrafts: boolean;
   overrideRepo?: string;
   overrideOwner?: string;
 }

@@ -9,12 +9,16 @@ inputs:
     description: "Your workflow GITHUB_TOKEN secret"
     required: true
   days_back:
-    description: "How far back should the calculations go, considering PR creation date (default: 30)"
+    description: "Number of days defining the earliest PR creation date to be included in the calculations"
     required: false
     default: 30
   labels_to_ignore:
     description: "PR with these labels will be ignored. Values delimited with commas"
     required: false
+  include_drafts:
+    desription: "If set to true, draft PRs will be included in the calculations"
+    required: false
+    default: false
 branding:
   icon: git-pull-request
   color: purple

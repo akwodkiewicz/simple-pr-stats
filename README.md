@@ -29,6 +29,12 @@ The stats will only include PRs between the date `days_back` days ago and now. D
 
 Default: 30
 
+### `include_drafts`
+
+If set to `true`, the stats will include draft PRs.
+
+Default: `false`
+
 ## Example usage
 
 ```

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.labelFilter = exports.dateFilter = void 0;
+exports.draftFilter = exports.labelFilter = exports.dateFilter = void 0;
 function dateFilter(daysBack) {
     const ms = daysBack * 24 * 60 * 60 * 1000;
     const thresholdDate = new Date(Date.now() - ms);
@@ -15,3 +15,7 @@ function labelFilter(labelsToIgnore) {
     };
 }
 exports.labelFilter = labelFilter;
+function draftFilter(includeDrafts) {
+    return (p) => (includeDrafts ? true : !p.draft);
+}
+exports.draftFilter = draftFilter;

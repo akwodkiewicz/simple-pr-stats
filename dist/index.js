@@ -46,7 +46,7 @@ const input_1 = require("./input");
 function main() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const { daysBack, labelsToIgnore, token, overrideOwner, overrideRepo } = (0, input_1.parseInput)();
+        const { daysBack, includeDrafts, labelsToIgnore, overrideOwner, overrideRepo, token, } = (0, input_1.parseInput)();
         const octokit = github.getOctokit(token);
         const pulls = [];
         try {
@@ -60,8 +60,9 @@ function main() {
                 const response = _c.value;
                 const pullsBatch = response.data;
                 const pullsAfterStartDate = pullsBatch.filter((0, filters_1.dateFilter)(daysBack));
-                const pullsToConsider = pullsAfterStartDate.filter((0, filters_1.labelFilter)(labelsToIgnore));
-                pulls.push(...pullsToConsider);
+                pulls.push(...pullsAfterStartDate
+                    .filter((0, filters_1.labelFilter)(labelsToIgnore))
+                    .filter((0, filters_1.draftFilter)(includeDrafts)));
                 if (pullsAfterStartDate.length < pullsBatch.length) {
                     break;
                 }
@@ -74,7 +75,6 @@ function main() {
             }
             finally { if (e_1) throw e_1.error; }
         }
-        core.debug(`pulls: ${JSON.stringify(pulls, null, undefined)}`);
         const pullsWithDurations = pulls
             .map(attachPullDurationMs)
             .sort((p1, p2) => p1[1] - p2[1]);
