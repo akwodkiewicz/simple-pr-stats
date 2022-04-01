@@ -1,12 +1,18 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import { dateFilter, labelFilter } from "./filters";
+import { dateFilter, draftFilter, labelFilter } from "./filters";
 import { parseInput } from "./input";
 import { Pull } from "./types";
 
 async function main() {
-  const { daysBack, labelsToIgnore, token, overrideOwner, overrideRepo } =
-    parseInput();
+  const {
+    daysBack,
+    includeDrafts,
+    labelsToIgnore,
+    overrideOwner,
+    overrideRepo,
+    token,
+  } = parseInput();
 
   const octokit = github.getOctokit(token);
 
@@ -24,16 +30,15 @@ async function main() {
   )) {
     const pullsBatch: Pull[] = response.data;
     const pullsAfterStartDate = pullsBatch.filter(dateFilter(daysBack));
-    const pullsToConsider = pullsAfterStartDate.filter(
-      labelFilter(labelsToIgnore)
+    pulls.push(
+      ...pullsAfterStartDate
+        .filter(labelFilter(labelsToIgnore))
+        .filter(draftFilter(includeDrafts))
     );
-    pulls.push(...pullsToConsider);
     if (pullsAfterStartDate.length < pullsBatch.length) {
       break;
     }
   }
-
-  core.debug(`pulls: ${JSON.stringify(pulls, null, undefined)}`);
 
   const pullsWithDurations = pulls
     .map(attachPullDurationMs)

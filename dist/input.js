@@ -44,12 +44,14 @@ function parseInput() {
         .split(",")
         .map((x) => x.trim())
         .filter(Boolean);
+    const includeDrafts = core.getBooleanInput("include_drafts");
     const overrideOwner = core.getInput("override_owner") || undefined;
     const overrideRepo = core.getInput("override_repo") || undefined;
     return {
         token,
         daysBack,
         labelsToIgnore,
+        includeDrafts,
         overrideRepo,
         overrideOwner,
     };
