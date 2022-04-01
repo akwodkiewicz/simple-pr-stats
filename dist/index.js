@@ -41,28 +41,27 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
+const filters_1 = require("./filters");
+const input_1 = require("./input");
 function main() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('token');
-        const overrideOwner = core.getInput('override_owner');
-        const overrideRepo = core.getInput('override_repo');
+        const { daysBack, token, overrideOwner, overrideRepo } = (0, input_1.parseInput)();
         const octokit = github.getOctokit(token);
-        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-        const thresholdDate = new Date(Date.now() - THIRTY_DAYS);
         const pulls = [];
         try {
             for (var _b = __asyncValues(octokit.paginate.iterator(octokit.rest.pulls.list, {
-                owner: overrideOwner || github.context.repo.owner,
-                repo: overrideRepo || github.context.repo.repo,
-                state: 'all',
-                sort: 'created',
-                direction: 'desc'
+                owner: overrideOwner !== null && overrideOwner !== void 0 ? overrideOwner : github.context.repo.owner,
+                repo: overrideRepo !== null && overrideRepo !== void 0 ? overrideRepo : github.context.repo.repo,
+                state: "all",
+                sort: "created",
+                direction: "desc",
             })), _c; _c = yield _b.next(), !_c.done;) {
                 const response = _c.value;
-                const pullsAboveThreshold = response.data.filter((d) => new Date(d.created_at) >= thresholdDate);
-                pulls.push(...pullsAboveThreshold);
-                if (pullsAboveThreshold.length < response.data.length) {
+                const pullsBatch = response.data;
+                const pullsAfterStartDate = pullsBatch.filter((0, filters_1.dateFilter)(daysBack));
+                pulls.push(...pullsAfterStartDate);
+                if (pullsAfterStartDate.length < pullsBatch.length) {
                     break;
                 }
             }
@@ -74,21 +73,29 @@ function main() {
             }
             finally { if (e_1) throw e_1.error; }
         }
-        const pullsWithDurations = pulls.map(attachPullDurationMs).sort((p1, p2) => p1[1] - p2[1]);
-        const avgMs = pullsWithDurations.map(([p, d]) => d).slice(1).reduce((prev, curr, idx) => {
+        const pullsWithDurations = pulls
+            .map(attachPullDurationMs)
+            .sort((p1, p2) => p1[1] - p2[1]);
+        const avgMs = pullsWithDurations
+            .map(([p, d]) => d)
+            .slice(1)
+            .reduce((prev, curr, idx) => {
             return (prev * idx + curr) / (idx + 1);
         }, pullsWithDurations[0][1]);
-        core.info(`Found ${pulls.length} pull request created after ${thresholdDate}`);
-        core.notice(`Average active time: ${msToDays(avgMs)} d`, { title: 'Average active time' });
-        core.notice(`Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`, { title: 'Minimum active time' });
-        core.notice(`Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`, { title: 'Maximum active time' });
+        core.info(`Found ${pulls.length} pull requests created in the last ${daysBack} days`);
+        core.notice(`Average active time: ${msToDays(avgMs)} d`, {
+            title: "Average active time",
+        });
+        core.notice(`Minimum active time: ${msToDays(pullsWithDurations[0][1])} d (${pullsWithDurations[0][0].html_url})`, { title: "Minimum active time" });
+        core.notice(`Maximum active time: ${msToDays(pullsWithDurations[pullsWithDurations.length - 1][1])} d (${pullsWithDurations[pullsWithDurations.length - 1][0].html_url})`, { title: "Maximum active time" });
     });
 }
 function attachPullDurationMs(pull) {
     var _a, _b;
     return [
         pull,
-        new Date((_b = (_a = pull.closed_at) !== null && _a !== void 0 ? _a : pull.merged_at) !== null && _b !== void 0 ? _b : Date.now()).valueOf() - new Date(pull.created_at).valueOf()
+        new Date((_b = (_a = pull.closed_at) !== null && _a !== void 0 ? _a : pull.merged_at) !== null && _b !== void 0 ? _b : Date.now()).valueOf() -
+            new Date(pull.created_at).valueOf(),
     ];
 }
 function msToDays(ms) {

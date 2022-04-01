@@ -1,13 +1,17 @@
-name: 'simple-pr-stats'
-author: 'Andrzej Wódkiewicz'
-description: 'Calculate simple PR statistics'
+name: "simple-pr-stats"
+author: "Andrzej Wódkiewicz"
+description: "Calculate simple PR statistics"
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"
 inputs:
   token:
-    description: 'Your workflow GITHUB_TOKEN secret'
+    description: "Your workflow GITHUB_TOKEN secret"
     required: true
+  days_back:
+    description: "How far back should the calculations go, considering PR creation date (default: 30)"
+    required: false
+    default: 30
 branding:
   icon: git-pull-request
   color: purple
