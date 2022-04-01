@@ -13,4 +13,5 @@ jobs:
         uses: ./ # Uses an action in the root directory
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          days_back: 1
+          days_back: 10
+          labels_to_ignore: good first issue, invalid
