@@ -54,18 +54,12 @@ function main() {
                 owner: overrideOwner !== null && overrideOwner !== void 0 ? overrideOwner : github.context.repo.owner,
                 repo: overrideRepo !== null && overrideRepo !== void 0 ? overrideRepo : github.context.repo.repo,
                 state: "all",
-                sort: "created",
-                direction: "desc",
             })), _c; _c = yield _b.next(), !_c.done;) {
                 const response = _c.value;
-                const pullsBatch = response.data;
-                const pullsAfterStartDate = pullsBatch.filter((0, filters_1.dateFilter)(daysBack));
-                pulls.push(...pullsAfterStartDate
+                pulls.push(...response.data
+                    .filter((0, filters_1.dateFilter)(daysBack))
                     .filter((0, filters_1.labelFilter)(labelsToIgnore))
                     .filter((0, filters_1.draftFilter)(includeDrafts)));
-                if (pullsAfterStartDate.length < pullsBatch.length) {
-                    break;
-                }
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }

@@ -24,20 +24,14 @@ async function main() {
       owner: overrideOwner ?? github.context.repo.owner,
       repo: overrideRepo ?? github.context.repo.repo,
       state: "all",
-      sort: "created",
-      direction: "desc",
     }
   )) {
-    const pullsBatch: Pull[] = response.data;
-    const pullsAfterStartDate = pullsBatch.filter(dateFilter(daysBack));
     pulls.push(
-      ...pullsAfterStartDate
+      ...(response.data as Pull[])
+        .filter(dateFilter(daysBack))
         .filter(labelFilter(labelsToIgnore))
         .filter(draftFilter(includeDrafts))
     );
-    if (pullsAfterStartDate.length < pullsBatch.length) {
-      break;
-    }
   }
 
   const pullsWithDurations = pulls
