@@ -5,9 +5,12 @@ export function dateFilter(
   daysBack: Input["daysBack"]
 ): (pull: Pull) => boolean {
   const ms = daysBack * 24 * 60 * 60 * 1000;
-  const thresholdDate = new Date(Date.now() - ms);
+  const timeWindowStart = new Date(Date.now() - ms);
   return (p: Pull) => {
-    return new Date(p.created_at) >= thresholdDate;
+    const finishDateString = p.merged_at ?? p.closed_at;
+    return finishDateString
+      ? new Date(finishDateString) >= timeWindowStart
+      : true;
   };
 }
 
